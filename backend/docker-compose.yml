@@ -1,0 +1,109 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: edu_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: edu_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - edu_net
+
+  users-service:
+    build: ./users-service
+    container_name: users_service
+    restart: always
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+    env_file:
+      - ./users-service/.env
+    networks:
+      - edu_net
+    volumes:
+      - ./users-service:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  classes-service:
+    build: ./classes-service
+    container_name: classes_service
+    restart: always
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+    env_file:
+      - ./classes-service/.env
+    networks:
+      - edu_net
+    volumes:
+      - ./classes-service:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  tasks-service:
+    build: ./tasks-service
+    container_name: tasks_service
+    restart: always
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+    env_file:
+      - ./tasks-service/.env
+    networks:
+      - edu_net
+    volumes:
+      - ./tasks-service:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  comments-service:
+    build: ./comments-service
+    container_name: comments_service
+    restart: always
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgres
+    env_file:
+      - ./comments-service/.env
+    networks:
+      - edu_net
+    volumes:
+      - ./comments-service:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  gateway:
+    build: ./gateway
+    container_name: api_gateway
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - users-service
+      - classes-service
+      - tasks-service
+      - comments-service
+    env_file:
+      - ./gateway/.env
+    networks:
+      - edu_net
+    volumes:
+      - ./gateway:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+networks:
+  edu_net:
+    driver: bridge
