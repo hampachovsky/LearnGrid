@@ -46,7 +46,7 @@ services:
     volumes:
       - ./classes-service:/app
       - /app/node_modules
-    command: npm run start:dev
+    command: sh -c "npm install && npm run start:dev"
 
   tasks-service:
     build: ./tasks-service
@@ -63,7 +63,7 @@ services:
     volumes:
       - ./tasks-service:/app
       - /app/node_modules
-    command: npm run start:dev
+    command: sh -c "npm install && npm run start:dev"
 
   comments-service:
     build: ./comments-service

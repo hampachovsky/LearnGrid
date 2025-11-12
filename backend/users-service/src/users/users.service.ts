@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -48,8 +48,16 @@ export class UsersService {
     return this.userRepo.find();
   }
 
+  async findByIds(ids: number[]) {
+    if (!ids.length) return [];
+    return this.userRepo.find({
+      where: { id: In(ids) },
+      select: ['id', 'firstName', 'secondName', 'email', 'role'],
+    });
+  }
+
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userRepo.findOne({ where: { id } });
   }
 
   findByEmail(email: string) {
