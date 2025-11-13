@@ -5,7 +5,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { AnnouncementEntity } from './announcement.entity';
 import { ClassUser } from './class-user.entity';
+import { TopicEntity } from './topic.entity';
 
 @Entity('class')
 export class ClassEntity {
@@ -23,4 +25,10 @@ export class ClassEntity {
 
   @OneToMany(() => ClassUser, (cu) => cu.class, { cascade: true })
   members: ClassUser[];
+
+  @OneToMany(() => TopicEntity, (topic) => topic.class)
+  topics: TopicEntity[];
+
+  @OneToMany(() => AnnouncementEntity, (ann) => ann.class, { cascade: true })
+  announcements: AnnouncementEntity[];
 }

@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { CreateClassDto } from './dto/create-class.dto';
 import { JoinClassDto } from './dto/join-class.dto';
 import { LeaveClassDto } from './dto/leave-class.dto';
+import { UpdateClassDto } from './dto/update-class.dto';
 import { ClassUser } from './entities/class-user.entity';
 import { ClassEntity } from './entities/class.entity';
 
@@ -40,6 +41,39 @@ export class ClassesService {
       where: { id: savedClass.id },
       relations: ['members'],
     });
+  }
+
+  async updateClassName(dto: UpdateClassDto) {
+    const cls = await this.classRepo.findOne({ where: { id: dto.classId } });
+    if (!cls) {
+      throw new RpcException({
+        status: 404,
+        message: 'Class not found',
+      });
+    }
+
+    const relation = await this.classUserRepo.findOne({
+      where: { class_id: dto.classId, user_id: dto.userId },
+    });
+
+    if (!relation) {
+      throw new RpcException({
+        status: 403,
+        message: 'You are not a member of this class',
+      });
+    }
+
+    if (relation.role !== 'teacher') {
+      throw new RpcException({
+        status: 403,
+        message: 'Only teacher can edit class name',
+      });
+    }
+
+    cls.name = dto.name;
+    await this.classRepo.save(cls);
+
+    return { message: 'Class name updated', class: cls };
   }
 
   async getMembers(classId: number) {

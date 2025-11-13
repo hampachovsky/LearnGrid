@@ -41,9 +41,11 @@ export class ClassesService {
     return firstValueFrom(this.client.send({ cmd: 'get_class_by_id' }, id));
   }
 
-  async update(id: number, dto: any) {
+  async updateClassName(classId: number, userId: number, name: string) {
     return firstValueFrom(
-      this.client.send({ cmd: 'update_class' }, { id, dto }),
+      this.client
+        .send({ cmd: 'update_class_name' }, { classId, userId, name })
+        .pipe(mapRpcError('update class name failed')),
     );
   }
 
@@ -68,6 +70,77 @@ export class ClassesService {
       this.client
         .send({ cmd: 'leave_class' }, { code, userId })
         .pipe(mapRpcError('leave failed')),
+    );
+  }
+
+  // ! Topics
+
+  async createTopic(classId: number, userId: number, title: string) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'create_topic' }, { classId, userId, title })
+        .pipe(mapRpcError('create topic failed')),
+    );
+  }
+
+  async getTopics(classId: number) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'get_topics' }, classId)
+        .pipe(mapRpcError('get topics failed')),
+    );
+  }
+
+  async deleteTopic(topicId: number, userId: number) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'delete_topic' }, { topicId, userId })
+        .pipe(mapRpcError('delete topic failed')),
+    );
+  }
+  async updateTopicTitle(topicId: number, userId: number, title: string) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'update_topic' }, { topicId, userId, title })
+        .pipe(mapRpcError('update topic title failed')),
+    );
+  }
+
+  // ! Announcements
+  async createAnnouncement(classId: number, userId: number, content: string) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'create_announcement' }, { classId, userId, content })
+        .pipe(mapRpcError('create announcement failed')),
+    );
+  }
+
+  async updateAnnouncement(
+    announcementId: number,
+    userId: number,
+    content: string,
+  ) {
+    return firstValueFrom(
+      this.client
+        .send(
+          { cmd: 'update_announcement' },
+          { announcementId, userId, content },
+        )
+        .pipe(mapRpcError('update announcement failed')),
+    );
+  }
+
+  async deleteAnnouncement(announcementId: number, userId: number) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'delete_announcement' }, { announcementId, userId })
+        .pipe(mapRpcError('delete announcement failed')),
+    );
+  }
+
+  async getAnnouncements(classId: number) {
+    return firstValueFrom(
+      this.client.send({ cmd: 'get_announcements' }, classId),
     );
   }
 }

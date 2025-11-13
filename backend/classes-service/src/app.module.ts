@@ -2,11 +2,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AnnouncementController } from './announcement/announcement.controller';
+import { AnnouncementService } from './announcement/announcement.service';
 import { ClassesController } from './classes/classes.controller';
 import { ClassesService } from './classes/classes.service';
+import { AnnouncementEntity } from './classes/entities/announcement.entity';
 import { ClassUser } from './classes/entities/class-user.entity';
 import { ClassEntity } from './classes/entities/class.entity';
+import { TopicEntity } from './classes/entities/topic.entity';
 import { UserEntity } from './classes/entities/user.entity';
+import { TopicController } from './topics/topics.controller';
+import { TopicService } from './topics/topics.service';
 
 @Module({
   imports: [
@@ -21,11 +27,23 @@ import { UserEntity } from './classes/entities/user.entity';
         username: config.get<string>('POSTGRES_USER'),
         password: config.get<string>('POSTGRES_PASSWORD'),
         database: config.get<string>('POSTGRES_DB'),
-        entities: [ClassEntity, ClassUser, UserEntity],
+        entities: [
+          ClassEntity,
+          ClassUser,
+          UserEntity,
+          TopicEntity,
+          AnnouncementEntity,
+        ],
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([ClassEntity, ClassUser, UserEntity]),
+    TypeOrmModule.forFeature([
+      ClassEntity,
+      ClassUser,
+      UserEntity,
+      TopicEntity,
+      AnnouncementEntity,
+    ]),
     ClientsModule.register([
       {
         name: 'USERS_SERVICE',
@@ -37,7 +55,7 @@ import { UserEntity } from './classes/entities/user.entity';
       },
     ]),
   ],
-  controllers: [ClassesController],
-  providers: [ClassesService],
+  controllers: [ClassesController, TopicController, AnnouncementController],
+  providers: [ClassesService, TopicService, AnnouncementService],
 })
 export class AppModule {}

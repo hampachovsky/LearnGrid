@@ -4,6 +4,7 @@ import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { JoinClassDto } from './dto/join-class.dto';
 import { LeaveClassDto } from './dto/leave-class.dto';
+import { UpdateClassDto } from './dto/update-class.dto';
 
 @Controller()
 export class ClassesController {
@@ -27,6 +28,11 @@ export class ClassesController {
   @MessagePattern({ cmd: 'get_class_members' })
   getMembers(@Payload() classId: number) {
     return this.classesService.getMembers(classId);
+  }
+
+  @MessagePattern({ cmd: 'update_class_name' })
+  updateClassName(@Payload() dto: UpdateClassDto) {
+    return this.classesService.updateClassName(dto);
   }
 
   @MessagePattern({ cmd: 'delete_class' })
