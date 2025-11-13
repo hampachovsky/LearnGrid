@@ -24,6 +24,7 @@ export class UsersController {
 
   @MessagePattern({ cmd: 'get_users_by_ids' })
   getUsersByIds(@Payload() ids: number[]) {
+    console.log('test');
     return this.usersService.findByIds(ids);
   }
 

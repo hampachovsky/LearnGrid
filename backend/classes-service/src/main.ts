@@ -14,6 +14,6 @@ async function bootstrap() {
     },
   );
   await app.listen();
-  console.log('📘 Classes microservice is running on port 3002');
+  console.log('Classes microservice is running on port 3002');
 }
 bootstrap();
