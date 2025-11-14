@@ -31,6 +31,11 @@ import { UserEntity } from './entities/user.entity';
         transport: Transport.TCP,
         options: { host: 'classes-service', port: 3002 },
       },
+      {
+        name: 'TASKS_SERVICE',
+        transport: Transport.TCP,
+        options: { host: 'tasks-service', port: 3003 },
+      },
     ]),
   ],
   controllers: [CommentsController],

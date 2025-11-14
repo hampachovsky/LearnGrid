@@ -146,4 +146,12 @@ export class TasksService {
       order: { topic_id: 'ASC', id: 'ASC' },
     });
   }
+
+  async getTaskById(taskId: number) {
+    const task = await this.taskRepo.findOne({
+      where: { id: taskId },
+    });
+
+    return task;
+  }
 }

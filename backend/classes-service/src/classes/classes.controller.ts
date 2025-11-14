@@ -54,4 +54,9 @@ export class ClassesController {
   getClassUserEntry(@Payload() { classId, userId }) {
     return this.classesService.getClassUserEntry(classId, userId);
   }
+
+  @MessagePattern({ cmd: 'get_user_class_role' })
+  getUserClassRole(@Payload() dto) {
+    return this.classesService.getUserClassRole(dto.classId, dto.userId);
+  }
 }

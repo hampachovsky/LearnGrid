@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ClassesController } from './classes/classes.controller';
 import { ClassesService } from './classes/classes.service';
+import { CommentsController } from './comments/comments.controller';
+import { CommentsService } from './comments/comments.service';
 import { SubmissionsController } from './submissions/submissions.controller';
 import { SubmissionsService } from './submissions/submissions.service';
 import { TasksController } from './tasks/tasks.controller';
@@ -33,7 +36,14 @@ import { UsersModule } from './users/users.module';
     ClassesController,
     TasksController,
     SubmissionsController,
+    CommentsController,
   ],
-  providers: [AppService, ClassesService, TasksService, SubmissionsService],
+  providers: [
+    AppService,
+    ClassesService,
+    TasksService,
+    SubmissionsService,
+    CommentsService,
+  ],
 })
 export class AppModule {}

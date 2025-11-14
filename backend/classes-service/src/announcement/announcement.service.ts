@@ -94,4 +94,13 @@ export class AnnouncementService {
       order: { id: 'DESC' },
     });
   }
+
+  async getById(announcementId: number) {
+    const ann = await this.annRepo.findOne({
+      where: { id: announcementId },
+      select: ['id', 'content', 'class_id', 'created_at', 'updated_at'],
+    });
+
+    return ann ?? null;
+  }
 }

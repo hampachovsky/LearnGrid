@@ -218,4 +218,13 @@ export class ClassesService {
 
     return entry;
   }
+
+  async getUserClassRole(classId: number, userId: number) {
+    const relation = await this.classUserRepo.findOne({
+      where: { class_id: classId, user_id: userId },
+      select: ['role'],
+    });
+
+    return relation ? { role: relation.role } : null;
+  }
 }

@@ -28,4 +28,9 @@ export class AnnouncementController {
   get(@Payload() classId: number) {
     return this.service.getAnnouncements(classId);
   }
+
+  @MessagePattern({ cmd: 'get_announcement_by_id' })
+  getById(@Payload() data: { announcementId: number }) {
+    return this.service.getById(data.announcementId);
+  }
 }

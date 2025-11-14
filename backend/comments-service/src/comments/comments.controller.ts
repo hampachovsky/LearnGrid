@@ -1,34 +1,46 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
 
 @Controller()
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @MessagePattern('createComment')
-  create(@Payload() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  @MessagePattern({ cmd: 'create_comment' })
+  createComment(@Payload() data) {
+    return this.commentsService.createComment(
+      data.userId,
+      data.type,
+      data.entityId,
+      data.content,
+    );
   }
 
-  @MessagePattern('findAllComments')
-  findAll() {
-    return this.commentsService.findAll();
+  @MessagePattern({ cmd: 'update_comment' })
+  updateComment(@Payload() data) {
+    return this.commentsService.updateComment(
+      data.commentId,
+      data.userId,
+      data.content,
+    );
   }
 
-  @MessagePattern('findOneComment')
-  findOne(@Payload() id: number) {
-    return this.commentsService.findOne(id);
+  @MessagePattern({ cmd: 'delete_comment' })
+  deleteComment(@Payload() data) {
+    return this.commentsService.deleteComment(data.commentId, data.userId);
   }
 
-  @MessagePattern('updateComment')
-  update(@Payload() updateCommentDto) {
-    return this.commentsService.update(updateCommentDto.id, updateCommentDto);
+  @MessagePattern({ cmd: 'get_comments_by_entity' })
+  getCommentsByEntity(@Payload() data) {
+    return this.commentsService.getCommentsByEntity(
+      data.type,
+      data.entityId,
+      data.userId,
+    );
   }
 
-  @MessagePattern('removeComment')
-  remove(@Payload() id: number) {
-    return this.commentsService.remove(id);
+  @MessagePattern({ cmd: 'get_comments_by_class' })
+  getCommentsByClass(@Payload() data) {
+    return this.commentsService.getCommentsByClass(data.classId, data.userId);
   }
 }

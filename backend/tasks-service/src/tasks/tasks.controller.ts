@@ -30,4 +30,9 @@ export class TasksController {
   getAllWithTopics() {
     return this.tasksService.getAllTasksWithTopics();
   }
+
+  @MessagePattern({ cmd: 'get_task_by_id' })
+  getTaskById(@Payload() { taskId }) {
+    return this.tasksService.getTaskById(taskId);
+  }
 }
