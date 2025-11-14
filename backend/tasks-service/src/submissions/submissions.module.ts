@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClassUser } from './entities/class-user.entity';
-import { ClassEntity } from './entities/class.entity';
-import { SubmissionEntity } from './entities/submission.entity';
-import { TaskEntity } from './entities/task.entity';
-import { TopicEntity } from './entities/topic.entity';
-import { UserEntity } from './entities/user.entity';
-import { TasksController } from './tasks.controller';
-import { TasksService } from './tasks.service';
+import { ClassUser } from 'src/tasks/entities/class-user.entity';
+import { ClassEntity } from 'src/tasks/entities/class.entity';
+import { SubmissionEntity } from 'src/tasks/entities/submission.entity';
+import { TaskEntity } from 'src/tasks/entities/task.entity';
+import { TopicEntity } from 'src/tasks/entities/topic.entity';
+import { UserEntity } from 'src/tasks/entities/user.entity';
+import { SubmissionsController } from './submissions.controller';
+import { SubmissionsService } from './submissions.service';
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import { TasksService } from './tasks.service';
       },
     ]),
   ],
-  controllers: [TasksController],
-  providers: [TasksService],
+  controllers: [SubmissionsController],
+  providers: [SubmissionsService],
 })
-export class TasksModule {}
+export class SubmissionsModule {}

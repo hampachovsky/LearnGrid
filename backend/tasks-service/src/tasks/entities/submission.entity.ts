@@ -5,8 +5,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ClassUser } from './class-user.entity';
 import { TaskEntity } from './task.entity';
-import { UserEntity } from './user.entity';
 
 @Entity('submissions')
 export class SubmissionEntity {
@@ -29,7 +29,13 @@ export class SubmissionEntity {
   @JoinColumn({ name: 'task_id' })
   task: TaskEntity;
 
-  @ManyToOne(() => UserEntity)
-  @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
+  @Column()
+  task_id: number;
+
+  @ManyToOne(() => ClassUser, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'class_user_id' })
+  classUser: ClassUser;
+
+  @Column()
+  class_user_id: number;
 }

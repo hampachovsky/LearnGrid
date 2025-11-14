@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SubmissionsModule } from './submissions/submissions.module';
+import { ClassUser } from './tasks/entities/class-user.entity';
 import { ClassEntity } from './tasks/entities/class.entity';
 import { SubmissionEntity } from './tasks/entities/submission.entity';
 import { TaskEntity } from './tasks/entities/task.entity';
@@ -27,6 +29,7 @@ import { TasksModule } from './tasks/tasks.module';
           UserEntity,
           ClassEntity,
           TopicEntity,
+          ClassUser,
         ],
         synchronize: true,
       }),
@@ -37,8 +40,10 @@ import { TasksModule } from './tasks/tasks.module';
       UserEntity,
       ClassEntity,
       TopicEntity,
+      ClassUser,
     ]),
     TasksModule,
+    SubmissionsModule,
   ],
   controllers: [],
   providers: [],

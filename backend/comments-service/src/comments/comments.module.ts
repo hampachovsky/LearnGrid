@@ -1,24 +1,20 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClassUser } from './entities/class-user.entity';
-import { ClassEntity } from './entities/class.entity';
-import { SubmissionEntity } from './entities/submission.entity';
+import { CommentsController } from './comments.controller';
+import { CommentsService } from './comments.service';
+import { AnnouncementEntity } from './entities/announcement.entity';
+import { CommentEntity } from './entities/comment.entity';
 import { TaskEntity } from './entities/task.entity';
-import { TopicEntity } from './entities/topic.entity';
 import { UserEntity } from './entities/user.entity';
-import { TasksController } from './tasks.controller';
-import { TasksService } from './tasks.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      SubmissionEntity,
-      TaskEntity,
+      CommentEntity,
+      AnnouncementEntity,
       UserEntity,
-      ClassEntity,
-      TopicEntity,
-      ClassUser,
+      TaskEntity,
     ]),
 
     ClientsModule.register([
@@ -37,7 +33,7 @@ import { TasksService } from './tasks.service';
       },
     ]),
   ],
-  controllers: [TasksController],
-  providers: [TasksService],
+  controllers: [CommentsController],
+  providers: [CommentsService],
 })
-export class TasksModule {}
+export class CommentsModule {}

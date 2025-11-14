@@ -208,4 +208,14 @@ export class ClassesService {
     await this.classUserRepo.remove(relation);
     return { message: `Left class ${foundClass.name}` };
   }
+
+  async getClassUserEntry(classId: number, userId: number) {
+    const entry = await this.classUserRepo.findOne({
+      where: { class_id: classId, user_id: userId },
+    });
+
+    if (!entry) return null;
+
+    return entry;
+  }
 }

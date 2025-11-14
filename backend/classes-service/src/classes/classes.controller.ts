@@ -49,4 +49,9 @@ export class ClassesController {
   leave(@Payload() dto: LeaveClassDto) {
     return this.classesService.leaveClass(dto);
   }
+
+  @MessagePattern({ cmd: 'get_class_user_entry' })
+  getClassUserEntry(@Payload() { classId, userId }) {
+    return this.classesService.getClassUserEntry(classId, userId);
+  }
 }
