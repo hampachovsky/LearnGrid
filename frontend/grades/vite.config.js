@@ -25,6 +25,7 @@ export default defineConfig({
 	preview: {
 		port: 5177,
 		cors: true,
+		host: true,
 	},
 
 	build: {

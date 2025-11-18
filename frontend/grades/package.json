@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite --port 5177 --strictPort",
 		"build": "vite build",
-		"preview": "vite preview --port 5177 --strictPort",
+		"preview": "vite preview --host 0.0.0.0 --port 5177 --strictPort",
 		"serve": "vite preview --port 5177 --strictPort"
 	},
 	"dependencies": {

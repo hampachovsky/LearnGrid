@@ -23,6 +23,12 @@ export default defineConfig({
 		headers: {
 			'Access-Control-Allow-Origin': '*',
 		},
+		host: true,
+	},
+	preview: {
+		port: 5173,
+		cors: true,
+		host: true,
 	},
 	build: {
 		modulePreload: false,
