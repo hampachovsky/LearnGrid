@@ -7,13 +7,11 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('register')
   @MessagePattern({ cmd: 'register' })
   async register(@Body() body: CreateUserDto) {
     return this.authService.register(body);
   }
 
-  // @Post('login')
   @MessagePattern({ cmd: 'login' })
   async login(@Body() body: { email: string; password: string }) {
     const user = await this.authService.validateUser(body.email, body.password);

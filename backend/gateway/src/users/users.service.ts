@@ -62,4 +62,12 @@ export class UsersService implements OnModuleInit {
         .pipe(mapRpcError('Register failed')),
     );
   }
+
+  async getMe(userId: number) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'me' }, { userId })
+        .pipe(mapRpcError('Get me failed')),
+    );
+  }
 }
