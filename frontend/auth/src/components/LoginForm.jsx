@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { loginRequest } from '../services/authApi'
 import { mapErrorMessage } from '../utils/errorMessages'
 
-export default function LoginForm() {
+export default function LoginForm({ onLogin }) {
 	const [serverError, setServerError] = useState(null)
+	const navigate = useNavigate()
 
 	const {
 		register,
@@ -19,6 +20,8 @@ export default function LoginForm() {
 		onSuccess: () => {
 			setServerError(null)
 			console.log('Login success')
+			onLogin()
+			navigate('/dashboard')
 		},
 		onError: (err) => {
 			const status = err?.response?.status
@@ -73,7 +76,7 @@ export default function LoginForm() {
 
 				<p className='text-center text-sm mt-4'>
 					Немає акаунта?{' '}
-					<Link to='/register' className='text-blue-600 hover:underline'>
+					<Link to='/auth/register' className='text-blue-600 hover:underline'>
 						Зареєструватися
 					</Link>
 				</p>

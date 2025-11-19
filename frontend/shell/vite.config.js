@@ -14,7 +14,7 @@ export default defineConfig({
 				tasks: 'http://localhost:5176/assets/remoteEntry.js',
 				grades: 'http://localhost:5177/assets/remoteEntry.js',
 			},
-			shared: ['react', 'react-dom'],
+			shared: ['react', 'react-dom', 'react-router', '@tanstack/react-query'],
 		}),
 	],
 	server: {

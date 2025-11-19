@@ -19,7 +19,7 @@ export default function RegisterForm() {
 		mutationFn: registerRequest,
 		onSuccess: () => {
 			setServerError(null)
-			navigate('/login')
+			navigate('/auth/login')
 		},
 		onError: (err) => {
 			const status = err?.response?.status
@@ -109,7 +109,7 @@ export default function RegisterForm() {
 
 				<p className='text-center text-sm mt-4'>
 					Вже є акаунт?{' '}
-					<Link to='/login' className='text-blue-600 hover:underline'>
+					<Link to='/auth/login' className='text-blue-600 hover:underline'>
 						Увійти
 					</Link>
 				</p>
