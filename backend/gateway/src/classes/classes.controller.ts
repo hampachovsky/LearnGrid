@@ -28,6 +28,11 @@ export class ClassesController {
     return this.classesService.create(dto, req.user.userId);
   }
 
+  @Get('my')
+  getMyClasses(@Req() req) {
+    return this.classesService.getMyClasses(req.user.userId);
+  }
+
   @Get(':id/members')
   getMembers(@Param('id', ParseIntPipe) id: number) {
     return this.classesService.getClassMembers(id);

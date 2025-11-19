@@ -227,4 +227,19 @@ export class ClassesService {
 
     return relation ? { role: relation.role } : null;
   }
+
+  async getClassesForUser(userId: number) {
+  const memberships = await this.classUserRepo.find({
+    where: { user_id: userId },
+    relations: ['class'], 
+  });
+
+  console.log(memberships)
+
+  return memberships.map((m) => ({
+    id: m.class.id,
+    name: m.class.name,
+    role: m.role,
+  }));
+}
 }

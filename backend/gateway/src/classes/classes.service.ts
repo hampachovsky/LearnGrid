@@ -30,6 +30,14 @@ export class ClassesService {
     );
   }
 
+  async getMyClasses(userId: number) {
+  return firstValueFrom(
+    this.client
+      .send({ cmd: 'get_classes_for_user' }, { userId })
+      .pipe(mapRpcError('failed to get user classes')),
+  );
+}
+
   async create(dto, userId: number) {
     console.log(userId);
     return firstValueFrom(
