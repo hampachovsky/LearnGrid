@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { firstValueFrom } from 'rxjs';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateClassDto } from './dto/create-class.dto';
 import { JoinClassDto } from './dto/join-class.dto';
 import { LeaveClassDto } from './dto/leave-class.dto';
@@ -229,17 +229,52 @@ export class ClassesService {
   }
 
   async getClassesForUser(userId: number) {
-  const memberships = await this.classUserRepo.find({
-    where: { user_id: userId },
-    relations: ['class'], 
-  });
+    const memberships = await this.classUserRepo.find({
+      where: { user_id: userId },
+      relations: ['class'],
+    });
 
-  console.log(memberships)
+    if (!memberships.length) return [];
 
-  return memberships.map((m) => ({
-    id: m.class.id,
-    name: m.class.name,
-    role: m.role,
-  }));
-}
+    const classIds = [...new Set(memberships.map((m) => m.class_id))];
+
+    const teacherLinks = await this.classUserRepo.find({
+      where: {
+        class_id: In(classIds),
+        role: 'teacher',
+      },
+    });
+
+    const teacherIds = [...new Set(teacherLinks.map((t) => t.user_id))];
+
+    const users = await firstValueFrom(
+      this.usersClient.send({ cmd: 'get_users_by_ids' }, teacherIds),
+    );
+
+    const teacherMap = Object.fromEntries(users.map((u) => [u.id, u]));
+    const classTeacherMap = Object.fromEntries(
+      teacherLinks.map((t) => [t.class_id, t.user_id]),
+    );
+
+    const studentCountsRaw = await this.classUserRepo
+      .createQueryBuilder('cu')
+      .select('cu.class_id', 'class_id')
+      .addSelect('COUNT(*)', 'count')
+      .where('cu.role = :role', { role: 'student' })
+      .andWhere('cu.class_id IN (:...classIds)', { classIds })
+      .groupBy('cu.class_id')
+      .getRawMany();
+
+    const studentCountMap = Object.fromEntries(
+      studentCountsRaw.map((row) => [row.class_id, Number(row.count)]),
+    );
+
+    return memberships.map((m) => ({
+      id: m.class.id,
+      name: m.class.name,
+      role: m.role,
+      teacher: teacherMap[classTeacherMap[m.class_id]] ?? null,
+      studentCount: studentCountMap[m.class_id] ?? 0,
+    }));
+  }
 }

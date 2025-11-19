@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { Navigate } from 'react-router'
-import { UserContext } from '../context/UserContext'
+import { UserContext } from '../../context/UserContext'
 
 export default function ProtectedFromAuth({ children }) {
 	const { user, isLoading } = useContext(UserContext)

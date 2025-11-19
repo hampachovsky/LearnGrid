@@ -1,14 +1,15 @@
 import React, { useContext, useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 import Header from './components/Header'
-import MobileSidebarDrawer from './components/MobileSidebar'
 import NotFound from './components/NotFound'
-import ProtectedFromAuth from './components/ProtectedFromAuth'
-import ProtectedRoute from './components/ProtectedRoute'
-import Sidebar from './components/Sidebar'
+import ProtectedFromAuth from './components/Protected/ProtectedFromAuth'
+import ProtectedRoute from './components/Protected/ProtectedRoute'
+import MobileSidebarDrawer from './components/Sidebar/MobileSidebar'
+import Sidebar from './components/Sidebar/Sidebar'
 import { UserContext } from './context/UserContext'
 
 const Auth = React.lazy(() => import('auth/App'))
+const Classes = React.lazy(() => import('classes/App'))
 
 export default function App() {
 	const { user, logout, refetch } = useContext(UserContext)
@@ -32,9 +33,9 @@ export default function App() {
 				{user && <Sidebar isTeacher={isTeacher} isStudent={isStudent} />}
 
 				<main className='flex-1 p-6 sm:p-8'>
-					<React.Suspense fallback='Завантаження...'>
+					<React.Suspense fallback='Завантаження класів...'>
 						<Routes>
-							<Route path='/' element={user ? <Dashboard /> : <Navigate replace to='/auth/login' />} />
+							<Route path='/' element={user ? <Dashboard /> : <Navigate to='/auth/login' />} />
 
 							<Route
 								path='/auth/*'
@@ -49,7 +50,7 @@ export default function App() {
 								path='/classes'
 								element={
 									<ProtectedRoute>
-										<ClassesList />
+										<Classes />
 									</ProtectedRoute>
 								}
 							/>
@@ -80,7 +81,6 @@ export default function App() {
 		</div>
 	)
 }
-
 function Dashboard() {
 	return (
 		<div>
