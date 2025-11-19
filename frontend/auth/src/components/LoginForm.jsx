@@ -21,7 +21,7 @@ export default function LoginForm({ onLogin }) {
 			setServerError(null)
 			console.log('Login success')
 			onLogin()
-			navigate('/dashboard')
+			navigate('/classes')
 		},
 		onError: (err) => {
 			const status = err?.response?.status

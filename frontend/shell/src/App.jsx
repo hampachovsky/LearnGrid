@@ -1,76 +1,120 @@
-import React, { useContext } from 'react'
-import { Link, Route, Routes } from 'react-router'
+import React, { useContext, useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router'
+import Header from './components/Header'
+import MobileSidebarDrawer from './components/MobileSidebar'
+import NotFound from './components/NotFound'
+import ProtectedFromAuth from './components/ProtectedFromAuth'
 import ProtectedRoute from './components/ProtectedRoute'
+import Sidebar from './components/Sidebar'
 import { UserContext } from './context/UserContext'
 
 const Auth = React.lazy(() => import('auth/App'))
 
-// const Classes = React.lazy(() => import('classes/App'))
-// const Tasks = React.lazy(() => import('tasks/App'))
-// const Grades = React.lazy(() => import('grades/App'))
-
 export default function App() {
 	const { user, logout, refetch } = useContext(UserContext)
+	const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+	const isTeacher = user?.role === 'teacher'
+	const isStudent = user?.role === 'student'
 
 	return (
-		<div className='p-6'>
-			<nav className='flex justify-between mb-6'>
-				<h1 className='text-xl font-bold'>Shell</h1>
+		<div className='min-h-screen bg-gray-100'>
+			<Header user={user} logout={logout} onMenuOpen={() => setDrawerOpen(true)} />
 
-				<div className='flex gap-4'>
-					<Link to='/'>Головна</Link>
-					<Link to='/auth/login'>Логін</Link>
+			<MobileSidebarDrawer
+				isOpen={isDrawerOpen}
+				onClose={() => setDrawerOpen(false)}
+				isTeacher={isTeacher}
+				isStudent={isStudent}
+			/>
 
-					{user && (
-						<button onClick={logout} className='px-3 py-1 bg-red-500 text-white rounded'>
-							Вийти
-						</button>
-					)}
-				</div>
-			</nav>
+			<div className='flex'>
+				{user && <Sidebar isTeacher={isTeacher} isStudent={isStudent} />}
 
-			<React.Suspense fallback='Завантаження...'>
-				<Routes>
-					<Route path='/' element={<HomePage user={user} />} />
+				<main className='flex-1 p-6 sm:p-8'>
+					<React.Suspense fallback='Завантаження...'>
+						<Routes>
+							<Route path='/' element={user ? <Dashboard /> : <Navigate replace to='/auth/login' />} />
 
-					<Route
-						path='/auth/*'
-						element={
-							<Auth
-								onLogin={() => {
-									refetch()
-								}}
+							<Route
+								path='/auth/*'
+								element={
+									<ProtectedFromAuth>
+										<Auth onLogin={() => refetch()} />
+									</ProtectedFromAuth>
+								}
 							/>
-						}
-					/>
-					<Route
-						path='/dashboard'
-						element={
-							<ProtectedRoute>
-								<Dashboard />
-							</ProtectedRoute>
-						}
-					/>
-				</Routes>
-			</React.Suspense>
-		</div>
-	)
-}
 
-function HomePage({ user }) {
-	return (
-		<div>
-			<h2 className='text-2xl mb-2'>{user ? `Привіт, ${user.email}` : 'Привіт 👋'}</h2>
-			<p>Це головний shell.</p>
+							<Route
+								path='/classes'
+								element={
+									<ProtectedRoute>
+										<ClassesList />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path='/join'
+								element={
+									<ProtectedRoute>
+										<JoinClassPage />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path='/create-class'
+								element={
+									<ProtectedRoute>
+										<CreateClassPage />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route path='*' element={<NotFound />} />
+						</Routes>
+					</React.Suspense>
+				</main>
+			</div>
 		</div>
 	)
 }
 
 function Dashboard() {
 	return (
-		<div className='p-4 bg-gray-100 rounded'>
-			<h2 className='text-xl'>Особистий кабінет</h2>
-			<p>Приватний контент.</p>
+		<div>
+			<h1 className='text-2xl font-semibold mb-2'>Вітаємо у LearnGrid 🎓</h1>
+			<p className='text-gray-700'>Оберіть клас або створіть новий.</p>
+		</div>
+	)
+}
+
+function ClassesList() {
+	return (
+		<div>
+			<h2 className='text-xl font-semibold mb-3'>Мої класи</h2>
+			<p>Тут буде список класів з MFE 👇</p>
+		</div>
+	)
+}
+
+function JoinClassPage() {
+	return (
+		<div>
+			<h2 className='text-xl font-semibold mb-3'>Приєднатися до класу</h2>
+			<input placeholder='Введіть код класу' className='px-3 py-2 border rounded w-64' />
+			<button className='ml-3 px-4 py-2 bg-blue-600 text-white rounded'>Приєднатися</button>
+		</div>
+	)
+}
+
+function CreateClassPage() {
+	return (
+		<div>
+			<h2 className='text-xl font-semibold mb-3'>Створити клас</h2>
+			<input placeholder='Назва класу' className='px-3 py-2 border rounded w-64' />
+			<button className='ml-3 px-4 py-2 bg-green-600 text-white rounded'>Створити</button>
 		</div>
 	)
 }

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createContext } from 'react'
 import { authMe } from '../api/auth'
 
@@ -6,6 +6,8 @@ import { authMe } from '../api/auth'
 export const UserContext = createContext(null)
 
 export function UserProvider({ children }) {
+	const queryClient = useQueryClient()
+
 	const {
 		data: user,
 		isLoading,
@@ -16,12 +18,15 @@ export function UserProvider({ children }) {
 		retry: false,
 	})
 
-	const logout = () => {
-		fetch('http://localhost:3000/api/auth/logout', {
+	const logout = async () => {
+		await fetch('http://localhost:3000/api/auth/logout', {
 			method: 'POST',
 			credentials: 'include',
 		})
-		refetch()
+
+		queryClient.setQueryData(['authMe'], null)
+
+		queryClient.invalidateQueries(['authMe'])
 	}
 
 	return <UserContext.Provider value={{ user, isLoading, refetch, logout }}>{children}</UserContext.Provider>
