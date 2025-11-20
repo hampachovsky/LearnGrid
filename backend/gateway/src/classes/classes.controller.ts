@@ -100,6 +100,11 @@ export class ClassesController {
     );
   }
 
+  @Get(':id')
+  getClassFull(@Param('id', ParseIntPipe) classId: number, @Req() req) {
+    return this.classesService.getClassFull(classId, req.user.userId);
+  }
+
   // ! Announcements
 
   @UseGuards(JwtAuthGuard)

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -10,11 +10,21 @@ import { mapRpcError } from 'src/utils/map-rpc-error';
 @Injectable()
 export class ClassesService {
   private client: ClientProxy;
+  private commentsClient: ClientProxy;
+  private tasksClient: ClientProxy;
 
   constructor() {
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: { host: 'classes-service', port: 3002 },
+    });
+    this.commentsClient = ClientProxyFactory.create({
+      transport: Transport.TCP,
+      options: { host: 'comments-service', port: 3004 },
+    });
+    this.tasksClient = ClientProxyFactory.create({
+      transport: Transport.TCP,
+      options: { host: 'tasks-service', port: 3003 },
     });
   }
 
@@ -31,12 +41,56 @@ export class ClassesService {
   }
 
   async getMyClasses(userId: number) {
-  return firstValueFrom(
-    this.client
-      .send({ cmd: 'get_classes_for_user' }, { userId })
-      .pipe(mapRpcError('failed to get user classes')),
-  );
-}
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'get_classes_for_user' }, { userId })
+        .pipe(mapRpcError('failed to get user classes')),
+    );
+  }
+
+  async getClassFull(classId: number, userId: number) {
+    const cls = await firstValueFrom(
+      this.client
+        .send({ cmd: 'get_class_by_id' }, classId)
+        .pipe(mapRpcError('get class failed')),
+    );
+
+    if (!cls) {
+      throw new HttpException('Class not found', 404);
+    }
+
+    const announcements = (await firstValueFrom(
+      this.client
+        .send<any[]>({ cmd: 'get_announcements' }, classId)
+        .pipe(mapRpcError('get announcements failed')),
+    )) as any[];
+
+    const tasks = await firstValueFrom(
+      this.tasksClient
+        .send({ cmd: 'get_tasks_by_class' }, { classId })
+        .pipe(mapRpcError('get tasks failed')),
+    );
+
+    const announcementsWithComments = await Promise.all(
+      announcements.map(async (ann) => {
+        const comments = await firstValueFrom(
+          this.commentsClient
+            .send(
+              { cmd: 'get_comments_by_entity' },
+              { type: 'announcement', entityId: ann.id, userId },
+            )
+            .pipe(mapRpcError('get comments failed')),
+        );
+        return { ...ann, comments };
+      }),
+    );
+
+    return {
+      class: cls,
+      announcements: announcementsWithComments,
+      tasks,
+    };
+  }
 
   async create(dto, userId: number) {
     console.log(userId);

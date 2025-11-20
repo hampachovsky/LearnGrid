@@ -62,6 +62,6 @@ export class ClassesController {
 
   @MessagePattern({ cmd: 'get_classes_for_user' })
   getClassesForUser(@Payload() data: { userId: number }) {
-  return this.classesService.getClassesForUser(data.userId);
-}
+    return this.classesService.getClassesForUser(data.userId);
+  }
 }

@@ -154,4 +154,12 @@ export class TasksService {
 
     return task;
   }
+
+  async getTasksByClass(classId: number) {
+    return this.taskRepo.find({
+      where: { class_id: classId },
+      relations: ['topic'],
+      order: { id: 'ASC' },
+    });
+  }
 }

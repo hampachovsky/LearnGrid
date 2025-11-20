@@ -35,4 +35,9 @@ export class TasksController {
   getTaskById(@Payload() { taskId }) {
     return this.tasksService.getTaskById(taskId);
   }
+
+  @MessagePattern({ cmd: 'get_tasks_by_class' })
+  getTasksByClass(@Payload() { classId }) {
+    return this.tasksService.getTasksByClass(classId);
+  }
 }
