@@ -178,10 +178,34 @@ export class CommentsService {
     if (!member)
       throw new RpcException({ status: 403, message: 'Not a class member' });
 
-    return this.repo.find({
+    const comments = await this.repo.find({
       where: { [`${type}_id`]: entityId },
       order: { created_at: 'ASC' },
     });
+
+    const enriched = await Promise.all(
+      comments.map(async (c) => {
+        const author = await firstValueFrom(
+          this.usersClient.send({ cmd: 'get_user_by_id' }, c.user_id),
+        );
+
+        return {
+          id: c.id,
+          content: c.content,
+          type: c.type,
+          created_at: c.created_at,
+          updated_at: c.updated_at,
+          user: {
+            id: author.id,
+            email: author.email,
+            firstName: author.firstName,
+            secondName: author.secondName,
+          },
+        };
+      }),
+    );
+
+    return enriched;
   }
 
   async getCommentsByClass(classId: number, userId: number) {

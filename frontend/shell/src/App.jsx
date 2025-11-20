@@ -47,7 +47,7 @@ export default function App() {
 							/>
 
 							<Route
-								path='/classes'
+								path='/classes/*'
 								element={
 									<ProtectedRoute>
 										<Classes />
@@ -86,15 +86,6 @@ function Dashboard() {
 		<div>
 			<h1 className='text-2xl font-semibold mb-2'>Вітаємо у LearnGrid 🎓</h1>
 			<p className='text-gray-700'>Оберіть клас або створіть новий.</p>
-		</div>
-	)
-}
-
-function ClassesList() {
-	return (
-		<div>
-			<h2 className='text-xl font-semibold mb-3'>Мої класи</h2>
-			<p>Тут буде список класів з MFE 👇</p>
 		</div>
 	)
 }

@@ -1,4 +1,5 @@
 import { ArrowLeftOnRectangleIcon, UserGroupIcon } from '@heroicons/react/24/outline'
+import { useNavigate } from 'react-router'
 
 const colors = [
 	'from-blue-500 to-blue-600',
@@ -15,11 +16,19 @@ function getColorById(id) {
 
 export default function ClassCard({ classItem }) {
 	const { id, name, role, teacher, studentCount } = classItem
+	const navigate = useNavigate()
 
 	const color = getColorById(id)
 
+	const handleOpen = () => {
+		navigate(`/${classItem.id}`)
+	}
+
 	return (
-		<div className='bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col'>
+		<div
+			onClick={handleOpen}
+			className='bg-white shadow rounded-xl overflow-hidden hover:shadow-lg transition cursor-pointer flex flex-col'
+		>
 			<div className={`p-6 text-white bg-gradient-to-r ${color}`}>
 				<h2 className='text-xl font-bold'>{name}</h2>
 				<p className='opacity-90 text-sm mt-1'>Роль: {role === 'teacher' ? 'Викладач' : 'Студент'}</p>
