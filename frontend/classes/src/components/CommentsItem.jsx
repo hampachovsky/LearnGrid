@@ -7,6 +7,7 @@ import { formatTime } from '../utils/formatTime'
 export default function CommentItem({ c, me, classId }) {
 	const [editMode, setEditMode] = useState(false)
 	const [content, setContent] = useState(c.content)
+	const [error, setError] = useState('')
 
 	const qc = useQueryClient()
 
@@ -19,6 +20,7 @@ export default function CommentItem({ c, me, classId }) {
 		mutationFn: () => updateComment(c.id, content),
 		onSuccess() {
 			setEditMode(false)
+			setError('')
 			qc.invalidateQueries(['class', classId])
 		},
 	})
@@ -30,6 +32,14 @@ export default function CommentItem({ c, me, classId }) {
 		},
 	})
 
+	const handleSave = () => {
+		if (content.trim().length < 1) {
+			setError('Коментар не може бути порожнім')
+			return
+		}
+		updateMutation.mutate()
+	}
+
 	return (
 		<div className='bg-gray-100 rounded-lg p-3 shadow-sm'>
 			<p className='font-semibold text-gray-800 text-sm mb-1'>
@@ -37,19 +47,28 @@ export default function CommentItem({ c, me, classId }) {
 			</p>
 
 			{!editMode ? (
-				<p className='text-gray-900  text-sm  leading-snug '>{c.content}</p>
+				<p className='text-gray-900 text-sm leading-snug'>{c.content}</p>
 			) : (
-				<textarea
-					className='w-full border rounded-lg p-2 bg-white text-sm'
-					rows={2}
-					value={content}
-					onChange={(e) => setContent(e.target.value)}
-				/>
+				<div>
+					<textarea
+						className={`w-full border rounded-lg p-2 bg-white text-sm ${error ? 'border-red-500' : ''}`}
+						rows={2}
+						value={content}
+						onChange={(e) => {
+							setContent(e.target.value)
+							if (error && e.target.value.trim().length >= 1) {
+								setError('')
+							}
+						}}
+					/>
+
+					{error && <p className='text-xs text-red-500 mt-1'>{error}</p>}
+				</div>
 			)}
 
-			<p className='text-[10px] text-gray-500 mt-1'> {formatTime(c.created_at)}</p>
+			<p className='text-[10px] text-gray-500 mt-1'>{formatTime(c.created_at)}</p>
 
-			<div className='flex items-center border-gray-300 gap-3 mt-2  border-t pt-2'>
+			<div className='flex items-center border-gray-300 gap-3 mt-2 border-t pt-2'>
 				{!editMode && canEdit && (
 					<button
 						onClick={() => setEditMode(true)}
@@ -72,13 +91,22 @@ export default function CommentItem({ c, me, classId }) {
 
 				{editMode && (
 					<div className='flex gap-2'>
-						<button onClick={() => setEditMode(false)} className='px-2 py-1 bg-gray-200 rounded text-xs cursor-pointer'>
+						<button
+							onClick={() => {
+								setEditMode(false)
+								setContent(c.content)
+								setError('')
+							}}
+							className='px-2 py-1 bg-gray-200 rounded text-xs cursor-pointer'
+						>
 							Скасувати
 						</button>
 
 						<button
-							onClick={() => updateMutation.mutate()}
-							className='px-2 py-1 bg-blue-600 text-white rounded text-xs cursor-pointer'
+							onClick={handleSave}
+							className={`px-2 py-1 rounded text-xs cursor-pointer text-white ${
+								content.trim().length < 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+							}`}
 						>
 							Зберегти
 						</button>

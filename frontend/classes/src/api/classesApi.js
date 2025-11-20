@@ -19,3 +19,13 @@ export const fetchMembers = async (classId) => {
 	const res = await api.get(`/classes/${classId}/members`)
 	return res.data
 }
+
+export const leaveClass = async (code) => {
+	const res = await api.post('/classes/leave', { code })
+	return res.data
+}
+
+export const updateClassName = async (classId, name) => {
+	const res = await api.patch(`/classes/${classId}`, { name })
+	return res.data
+}

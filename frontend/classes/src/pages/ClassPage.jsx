@@ -1,25 +1,26 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 
 import { fetchClassDetails, fetchMembers, fetchTopics } from '../api/classesApi'
 
+import { useNavigate } from 'react-router'
 import { fetchMe } from '../api/announcementsApi'
 import ClassHeader from '../components/ClassHeader'
 import ClassStream from '../components/ClassStream'
 import ClassTabs from '../components/ClassTabs'
 import MembersTab from '../components/MembersTab'
+import TopicCreate from '../components/TopicCreate'
 import TopicFilter from '../components/TopicFilter'
 import TopicTasks from '../components/TopicTasks'
-import TopicCreate from '../components/TopicCreate'
-import TopicItem from '../components/TopicItem'
 
 export default function ClassPage() {
 	const { id } = useParams()
 	const [activeTab, setActiveTab] = useState('Стрічка')
 	const [activeTopic, setActiveTopic] = useState('all')
+	const navigate = useNavigate()
 
-	const { data, isLoading, isError } = useQuery({
+	const classQuery = useQuery({
 		queryKey: ['class', id],
 		queryFn: () => fetchClassDetails(id),
 	})
@@ -39,41 +40,54 @@ export default function ClassPage() {
 		queryFn: fetchMe,
 	})
 
-	if (isLoading) return <p className='p-6'>Завантаження…</p>
-	if (isError) return <p className='p-6 text-red-500'>Помилка</p>
+	const topics = topicsQuery.data ? [...topicsQuery.data].reverse() : []
 
-	if (meQuery.isLoading) return <p className='p-6'>Завантаження…</p>
-	if (membersQuery.isLoading) return <p className='p-6'>Завантаження…</p>
-	if (!membersQuery.data) return <p className='p-6 text-red-500'>Помилка завантаження учасників</p>
+	useEffect(() => {
+		if (activeTopic !== 'all' && !topics.some((t) => t.id === Number(activeTopic))) {
+			const timer = setTimeout(() => setActiveTopic('all'), 0)
+			return () => clearTimeout(timer)
+		}
+	}, [topics, activeTopic])
+
+	if (classQuery.isLoading || membersQuery.isLoading || meQuery.isLoading) {
+		return <p className='p-6'>Завантаження…</p>
+	}
+
+	if (classQuery.isError) return <p className='p-6 text-red-500'>Помилка</p>
+	if (membersQuery.isError) return <p className='p-6 text-red-500'>Помилка завантаження учасників</p>
 
 	const me = meQuery.data
-
-	const { class: classInfo, announcements, tasks } = data
-
-	const topics = topicsQuery.data
 	const { teacher, students } = membersQuery.data
+
+	const isStudent = students?.some((s) => s.id === me.id)
+	const isTeacher = teacher?.id === me.id
+
+	if (!isStudent && !isTeacher) {
+		navigate('/')
+		// return (
+		// 	<div className='p-6 text-red-600 font-semibold'>
+		// 		Ви не маєте доступу до цього класу.
+		// 		{setTimeout(() => navigate('/'), 1000)}
+		// 	</div>
+		// )
+	}
+
+	const { class: classInfo, announcements, tasks } = classQuery.data
 
 	return (
 		<div className='p-6'>
-			<ClassHeader classInfo={classInfo} />
-
+			<ClassHeader classInfo={classInfo} me={me} />
 			<ClassTabs onChange={(tab) => setActiveTab(tab)} />
 
 			{activeTab === 'Стрічка' && <ClassStream classId={id} me={me} announcements={announcements} tasks={tasks} />}
 
 			{activeTab === 'Завдання' && (
 				<div className='mt-6'>
-					<TopicCreate classId={id} isTeacher={me.role === 'teacher'} />
+					<TopicCreate classId={id} isTeacher={isTeacher} />
 
 					<TopicFilter topics={topics} active={activeTopic} onChange={setActiveTopic} />
 
-					<div className='space-y-5 mt-4'>
-						{topics.map((t) => (
-							<TopicItem key={t.id} topic={t} classId={id} isTeacher={me.role === 'teacher'} />
-						))}
-					</div>
-
-					<TopicTasks topics={topics} tasks={tasks} filter={activeTopic} />
+					<TopicTasks topics={topics} tasks={tasks} filter={activeTopic} classId={id} isTeacher={isTeacher} />
 				</div>
 			)}
 

@@ -15,7 +15,7 @@ export default function ClassTabs({ onChange }) {
 				<button
 					key={tab}
 					onClick={() => select(tab)}
-					className={`pb-3 text-lg font-medium ${
+					className={`pb-3 text-lg font-medium cursor-pointer ${
 						active === tab ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-800'
 					}`}
 				>

@@ -14,13 +14,13 @@ export default function MobileSidebarDrawer({ isOpen, onClose, isTeacher, isStud
 
 			<aside
 				className={`
-          fixed top-0 left-0 h-full
-          w-64 bg-white shadow-xl z-40
-          p-6 pt-10 flex flex-col gap-4
-          border-r border-gray-200
-          transform transition-transform duration-300
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
+		fixed top-0 left-0 h-full
+		w-64 max-w-[90%] bg-white shadow-xl z-40
+		p-6 pt-10 flex flex-col gap-4
+		border-r border-gray-200
+		transform transition-transform duration-300 will-change-transform
+		${isOpen ? 'translate-x-0' : '-translate-x-full'}
+	`}
 			>
 				<button className='absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg' onClick={onClose}>
 					<XMarkIcon className='w-6 h-6 text-gray-700' />

@@ -7,6 +7,8 @@ import ProtectedRoute from './components/Protected/ProtectedRoute'
 import MobileSidebarDrawer from './components/Sidebar/MobileSidebar'
 import Sidebar from './components/Sidebar/Sidebar'
 import { UserContext } from './context/UserContext'
+import CreateClassPage from './pages/CreateClassPage'
+import JoinClassPage from './pages/JoinClassPage'
 
 const Auth = React.lazy(() => import('auth/App'))
 const Classes = React.lazy(() => import('classes/App'))
@@ -19,7 +21,7 @@ export default function App() {
 	const isStudent = user?.role === 'student'
 
 	return (
-		<div className='min-h-screen bg-gray-100'>
+		<div className='min-h-screen bg-gray-100 overflow-x-hidden w-full max-w-full'>
 			<Header user={user} logout={logout} onMenuOpen={() => setDrawerOpen(true)} />
 
 			<MobileSidebarDrawer
@@ -29,13 +31,13 @@ export default function App() {
 				isStudent={isStudent}
 			/>
 
-			<div className='flex'>
+			<div className='flex w-full max-w-full overflow-x-hidden'>
 				{user && <Sidebar isTeacher={isTeacher} isStudent={isStudent} />}
 
 				<main className='flex-1 p-6 sm:p-8'>
 					<React.Suspense fallback='Завантаження класів...'>
 						<Routes>
-							<Route path='/' element={user ? <Dashboard /> : <Navigate to='/auth/login' />} />
+							<Route path='/' element={user ? <Navigate to='/classes' /> : <Navigate to='/auth/login' />} />
 
 							<Route
 								path='/auth/*'
@@ -78,34 +80,6 @@ export default function App() {
 					</React.Suspense>
 				</main>
 			</div>
-		</div>
-	)
-}
-function Dashboard() {
-	return (
-		<div>
-			<h1 className='text-2xl font-semibold mb-2'>Вітаємо у LearnGrid 🎓</h1>
-			<p className='text-gray-700'>Оберіть клас або створіть новий.</p>
-		</div>
-	)
-}
-
-function JoinClassPage() {
-	return (
-		<div>
-			<h2 className='text-xl font-semibold mb-3'>Приєднатися до класу</h2>
-			<input placeholder='Введіть код класу' className='px-3 py-2 border rounded w-64' />
-			<button className='ml-3 px-4 py-2 bg-blue-600 text-white rounded'>Приєднатися</button>
-		</div>
-	)
-}
-
-function CreateClassPage() {
-	return (
-		<div>
-			<h2 className='text-xl font-semibold mb-3'>Створити клас</h2>
-			<input placeholder='Назва класу' className='px-3 py-2 border rounded w-64' />
-			<button className='ml-3 px-4 py-2 bg-green-600 text-white rounded'>Створити</button>
 		</div>
 	)
 }
