@@ -272,6 +272,7 @@ export class ClassesService {
     return memberships.map((m) => ({
       id: m.class.id,
       name: m.class.name,
+      code: m.class.code,
       role: m.role,
       teacher: teacherMap[classTeacherMap[m.class_id]] ?? null,
       studentCount: studentCountMap[m.class_id] ?? 0,
