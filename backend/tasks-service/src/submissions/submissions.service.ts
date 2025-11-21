@@ -186,21 +186,28 @@ export class SubmissionsService {
     });
   }
 
-  async getSubmissionsByClass(classId: number, userId: number) {
-    const isTeacher = await this.getTeacherFlag(classId, userId);
-
-    if (!isTeacher)
-      throw new RpcException({
-        status: 403,
-        message: 'Only teacher can see class submissions',
-      });
-
-    return this.submissionRepo
+  async getSubmissionsByClass(classId: number) {
+    const submissions = await this.submissionRepo
       .createQueryBuilder('submission')
       .leftJoinAndSelect('submission.task', 'task')
       .leftJoinAndSelect('submission.classUser', 'classUser')
       .where('task.class_id = :classId', { classId })
       .orderBy('submission.id', 'ASC')
       .getMany();
+
+    const ids = submissions.map((s) => Number(s.classUser.user_id));
+
+    const uniqueIds = [...new Set(ids)];
+
+    const users = await firstValueFrom(
+      this.usersClient.send({ cmd: 'get_users_by_ids' }, uniqueIds),
+    );
+
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    return submissions.map((s) => ({
+      ...s,
+      user: userMap.get(Number(s.classUser.user_id)) || null,
+    }));
   }
 }

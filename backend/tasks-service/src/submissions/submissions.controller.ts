@@ -32,7 +32,7 @@ export class SubmissionsController {
   }
 
   @MessagePattern({ cmd: 'get_submissions_by_class' })
-  getByClass(@Payload() { classId, userId }) {
-    return this.submissionsService.getSubmissionsByClass(classId, userId);
+  getByClass(@Payload() { classId }) {
+    return this.submissionsService.getSubmissionsByClass(classId);
   }
 }
