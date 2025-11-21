@@ -1,11 +1,10 @@
-import './App.css'
+import { Route, Routes } from 'react-router'
+import TaskPage from './pages/TaskPage'
 
-function App() {
+export default function App() {
 	return (
-		<>
-			<h1 className='text-lg text-emerald-500'>TASKS MFE !!!!!!!!!!</h1>
-		</>
+		<Routes>
+			<Route path='/:taskId' element={<TaskPage />} />
+		</Routes>
 	)
 }
-
-export default App

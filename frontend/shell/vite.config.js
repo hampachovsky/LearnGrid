@@ -12,7 +12,6 @@ export default defineConfig({
 				classes: 'http://localhost:5175/assets/remoteEntry.js',
 				auth: 'http://localhost:5174/assets/remoteEntry.js',
 				tasks: 'http://localhost:5176/assets/remoteEntry.js',
-				grades: 'http://localhost:5177/assets/remoteEntry.js',
 			},
 			shared: ['react', 'react-dom', 'react-router', '@tanstack/react-query'],
 		}),

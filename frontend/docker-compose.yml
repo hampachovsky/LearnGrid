@@ -33,10 +33,3 @@ services:
     environment:
       - PORT=5176
       
-  grades:
-    build: ./grades
-    container_name: mfe_grades
-    ports:
-      - "5177:5177"
-    environment:
-      - PORT=5177

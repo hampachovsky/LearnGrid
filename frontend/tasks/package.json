@@ -10,10 +10,13 @@
 		"serve": "vite preview --port 5176 --strictPort"
 	},
 	"dependencies": {
+		"@heroicons/react": "^2.2.0",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/react-query": "^5.90.10",
+		"axios": "^1.13.2",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
+		"react-router": "^7.9.6",
 		"tailwindcss": "^4.1.17"
 	},
 	"devDependencies": {

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Route, Routes, useLocation } from 'react-router'
 import Header from './components/Header'
 import NotFound from './components/NotFound'
 import ProtectedFromAuth from './components/Protected/ProtectedFromAuth'
@@ -12,10 +12,12 @@ import JoinClassPage from './pages/JoinClassPage'
 
 const Auth = React.lazy(() => import('auth/App'))
 const Classes = React.lazy(() => import('classes/App'))
+const Tasks = React.lazy(() => import('tasks/App'))
 
 export default function App() {
 	const { user, logout, refetch } = useContext(UserContext)
 	const [isDrawerOpen, setDrawerOpen] = useState(false)
+	const location = useLocation()
 
 	const isTeacher = user?.role === 'teacher'
 	const isStudent = user?.role === 'student'
@@ -53,6 +55,15 @@ export default function App() {
 								element={
 									<ProtectedRoute>
 										<Classes />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route
+								path='/tasks/*'
+								element={
+									<ProtectedRoute>
+										<Tasks initialPath={location.pathname} />
 									</ProtectedRoute>
 								}
 							/>
