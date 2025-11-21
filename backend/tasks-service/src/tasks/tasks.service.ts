@@ -178,12 +178,10 @@ export class TasksService {
 
     const classId = task.class_id;
 
-    const classUser = await firstValueFrom(
-      this.classesClient.send(
-        { cmd: 'get_class_user_entry' },
-        { classId, userId },
-      ),
+    const userArr = await firstValueFrom(
+      this.usersClient.send({ cmd: 'get_users_by_ids' }, { ids: [userId] }),
     );
+    const user = userArr[0];
 
     const members = await firstValueFrom(
       this.classesClient.send({ cmd: 'get_class_members' }, classId),
@@ -191,11 +189,32 @@ export class TasksService {
 
     const isTeacher = members.teacher?.id === userId;
 
-    console.log(isTeacher);
+    const classInfo = await firstValueFrom(
+      this.classesClient.send({ cmd: 'get_class_by_id' }, classId),
+    );
 
     if (isTeacher) {
-      return { task, submission: null };
+      return {
+        task,
+        submission: null,
+        user,
+        class: {
+          id: classInfo.id,
+          name: classInfo.name,
+          code: classInfo.code,
+          createdAt: classInfo.createdAt,
+          studentsCount: members.students?.length || 0,
+          teacher: members.teacher,
+        },
+      };
     }
+
+    const classUser = await firstValueFrom(
+      this.classesClient.send(
+        { cmd: 'get_class_user_entry' },
+        { classId, userId },
+      ),
+    );
 
     if (!classUser)
       throw new RpcException({
@@ -213,6 +232,15 @@ export class TasksService {
     return {
       task,
       submission: submission || null,
+      user,
+      class: {
+        id: classInfo.id,
+        name: classInfo.name,
+        code: classInfo.code,
+        createdAt: classInfo.createdAt,
+        studentsCount: members.students?.length || 0,
+        teacher: members.teacher,
+      },
     };
   }
 }
