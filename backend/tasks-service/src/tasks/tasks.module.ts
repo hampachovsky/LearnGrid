@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SubmissionsController } from 'src/submissions/submissions.controller';
+import { SubmissionsService } from 'src/submissions/submissions.service';
 import { ClassUser } from './entities/class-user.entity';
 import { ClassEntity } from './entities/class.entity';
 import { SubmissionEntity } from './entities/submission.entity';
@@ -37,7 +39,7 @@ import { TasksService } from './tasks.service';
       },
     ]),
   ],
-  controllers: [TasksController],
-  providers: [TasksService],
+  controllers: [TasksController, SubmissionsController],
+  providers: [TasksService, SubmissionsService],
 })
 export class TasksModule {}

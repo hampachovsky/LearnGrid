@@ -3,6 +3,7 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { firstValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
+import { SubmissionEntity } from './entities/submission.entity';
 import { TaskEntity } from './entities/task.entity';
 import { TopicEntity } from './entities/topic.entity';
 
@@ -11,6 +12,9 @@ export class TasksService {
   constructor(
     @InjectRepository(TaskEntity)
     private readonly taskRepo: Repository<TaskEntity>,
+
+    @InjectRepository(SubmissionEntity)
+    private readonly submissionRepo: Repository<SubmissionEntity>,
 
     @InjectRepository(TopicEntity)
     private readonly topicRepo: Repository<TopicEntity>,
@@ -161,5 +165,54 @@ export class TasksService {
       relations: ['topic'],
       order: { id: 'ASC' },
     });
+  }
+
+  async getTaskWithSubmission(taskId: number, userId: number) {
+    const task = await this.taskRepo.findOne({
+      where: { id: taskId },
+      relations: ['topic'],
+    });
+
+    if (!task)
+      throw new RpcException({ status: 404, message: 'Task not found' });
+
+    const classId = task.class_id;
+
+    const classUser = await firstValueFrom(
+      this.classesClient.send(
+        { cmd: 'get_class_user_entry' },
+        { classId, userId },
+      ),
+    );
+
+    const members = await firstValueFrom(
+      this.classesClient.send({ cmd: 'get_class_members' }, classId),
+    );
+
+    const isTeacher = members.teacher?.id === userId;
+
+    console.log(isTeacher);
+
+    if (isTeacher) {
+      return { task, submission: null };
+    }
+
+    if (!classUser)
+      throw new RpcException({
+        status: 403,
+        message: 'You are not a member of this class',
+      });
+
+    const submission = await this.submissionRepo.findOne({
+      where: {
+        task_id: task.id,
+        class_user_id: classUser.id,
+      },
+    });
+
+    return {
+      task,
+      submission: submission || null,
+    };
   }
 }

@@ -40,4 +40,9 @@ export class TasksController {
   getTasksByClass(@Payload() { classId }) {
     return this.tasksService.getTasksByClass(classId);
   }
+
+  @MessagePattern({ cmd: 'get_task_with_submission' })
+  getTaskWithSubmission(@Payload() { taskId, userId }) {
+    return this.tasksService.getTaskWithSubmission(taskId, userId);
+  }
 }

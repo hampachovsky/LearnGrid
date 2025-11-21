@@ -37,6 +37,11 @@ export class TasksController {
     return this.tasksService.getTasksByTopic(topicId);
   }
 
+  @Get(':taskId')
+  getTaskWithSubmission(@Param('taskId') taskId: number, @Req() req) {
+    return this.tasksService.getTaskWithSubmission(taskId, req.user.userId);
+  }
+
   @Get()
   getAllTasksWithTopics() {
     return this.tasksService.getAllTasksWithTopics();

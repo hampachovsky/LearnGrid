@@ -57,4 +57,12 @@ export class TasksService {
         .pipe(mapRpcError('get all tasks with topics failed')),
     );
   }
+
+  async getTaskWithSubmission(taskId: number, userId: number) {
+    return firstValueFrom(
+      this.client
+        .send({ cmd: 'get_task_with_submission' }, { taskId, userId })
+        .pipe(mapRpcError('get task failed')),
+    );
+  }
 }
