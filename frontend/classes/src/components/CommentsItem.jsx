@@ -2,7 +2,7 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { deleteComment, updateComment } from '../api/commentsApi'
-import { formatTime } from '../utils/formatTime'
+import { fixOffsetIfNeeded } from '../utils/fixOffsetIfNeeded'
 
 export default function CommentItem({ c, me, classId }) {
 	const [editMode, setEditMode] = useState(false)
@@ -66,7 +66,7 @@ export default function CommentItem({ c, me, classId }) {
 				</div>
 			)}
 
-			<p className='text-[10px] text-gray-500 mt-1'>{formatTime(c.created_at)}</p>
+			<p className='text-[10px] text-gray-500 mt-1'>{fixOffsetIfNeeded(c.created_at)}</p>
 
 			<div className='flex items-center border-gray-300 gap-3 mt-2 border-t pt-2'>
 				{!editMode && canEdit && (

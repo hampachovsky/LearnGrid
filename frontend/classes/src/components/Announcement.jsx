@@ -1,7 +1,7 @@
 import { TrashIcon } from '@heroicons/react/24/outline'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteAnnouncement } from '../api/announcementsApi'
-import { formatTime } from '../utils/formatTime'
+import { fixOffsetIfNeeded } from '../utils/fixOffsetIfNeeded'
 import CommentEditor from './CommentsEditor'
 import CommentItem from './CommentsItem'
 
@@ -27,7 +27,7 @@ export default function Announcement({ a, classId, isTeacher, me }) {
 				)}
 			</div>
 
-			<p className='text-xs text-gray-400'>{formatTime(a.created_at)}</p>
+			<p className='text-xs text-gray-400'>{fixOffsetIfNeeded(a.created_at)}</p>
 
 			{a.comments.length > 0 && (
 				<div className='space-y-3'>
