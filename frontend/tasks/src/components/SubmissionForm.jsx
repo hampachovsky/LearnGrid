@@ -1,41 +1,77 @@
+import { TrashIcon } from '@heroicons/react/24/outline'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { submitHomework } from '../api/tasksApi'
+import { createSubmission, deleteSubmission, updateSubmission } from '../api/submissionsApi'
 
 export default function SubmissionForm({ taskId, initial }) {
 	const qc = useQueryClient()
 	const [content, setContent] = useState(initial?.content || '')
+	const [error, setError] = useState('')
 
-	const mutation = useMutation({
-		mutationFn: () => submitHomework({ taskId, content }),
+	const createMutation = useMutation({
+		mutationFn: () => createSubmission({ taskId, content }),
+		onSuccess: () => {
+			qc.invalidateQueries(['task', taskId])
+			setError('')
+		},
+	})
+
+	const updateMutation = useMutation({
+		mutationFn: () =>
+			updateSubmission({
+				submissionId: initial.id,
+				content,
+			}),
+		onSuccess: () => {
+			qc.invalidateQueries(['task', taskId])
+			setError('')
+		},
+	})
+
+	const deleteMutation = useMutation({
+		mutationFn: () => deleteSubmission(initial.id),
 		onSuccess: () => {
 			qc.invalidateQueries(['task', taskId])
 		},
 	})
 
-	return (
-		<div className='bg-white shadow p-5 rounded-xl'>
-			<label className='block font-medium mb-2'>Посилання на виконану роботу</label>
+	const handleSubmit = () => {
+		if (content.trim().length < 1) {
+			setError('Посилання не може бути порожнім')
+			return
+		}
+		initial ? updateMutation.mutate() : createMutation.mutate()
+	}
 
-			<input
-				type='text'
+	return (
+		<div className='bg-white shadow p-4 rounded-xl space-y-3'>
+			<textarea
 				value={content}
-				onChange={(e) => setContent(e.target.value)}
-				className='w-full border rounded-lg px-3 py-2 mb-4'
-				placeholder='https://посилання-на-файл.com'
+				onChange={(e) => {
+					setContent(e.target.value)
+					setError('')
+				}}
+				placeholder='Вставте посилання на виконану роботу…'
+				className='w-full bg-gray-50 rounded-lg p-2 outline-none focus:ring-2 focus:ring-blue-500'
 			/>
 
-			<button
-				onClick={() => mutation.mutate()}
-				disabled={mutation.isPending}
-				className='bg-blue-600 text-white px-4 py-2 rounded-lg'
-			>
-				{initial ? 'Оновити роботу' : 'Здати роботу'}
-			</button>
+			{error && <div className='text-red-600 text-sm'>{error}</div>}
 
-			{mutation.isSuccess && <div className='mt-3 text-green-600'>Успішно збережено 🎉</div>}
+			<div className='flex items-center justify-between'>
+				<button onClick={handleSubmit} className='bg-blue-600 text-white px-4 py-2 rounded-lg cursor-pointer'>
+					{initial ? 'Оновити роботу' : 'Здати роботу'}
+				</button>
 
-			{mutation.isError && <div className='mt-3 text-red-600'>Не вдалося надіслати</div>}
+				{initial && (
+					<button
+						onClick={() => deleteMutation.mutate()}
+						className='text-red-600 hover:text-red-800 cursor-pointer flex items-center gap-1'
+					>
+						<TrashIcon className='w-5 h-5' />
+						Скасувати
+					</button>
+				)}
+			</div>
 		</div>
 	)
 }
