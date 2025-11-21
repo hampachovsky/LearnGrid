@@ -10,11 +10,17 @@ import { mapRpcError } from 'src/utils/map-rpc-error';
 @Injectable()
 export class TasksService {
   private client: ClientProxy;
+  private commentsClient: ClientProxy;
 
   constructor() {
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: { host: 'tasks-service', port: 3003 },
+    });
+
+    this.commentsClient = ClientProxyFactory.create({
+      transport: Transport.TCP,
+      options: { host: 'comments-service', port: 3004 },
     });
   }
 
@@ -59,10 +65,24 @@ export class TasksService {
   }
 
   async getTaskWithSubmission(taskId: number, userId: number) {
-    return firstValueFrom(
+    const taskData = await firstValueFrom(
       this.client
         .send({ cmd: 'get_task_with_submission' }, { taskId, userId })
         .pipe(mapRpcError('get task failed')),
     );
+
+    const comments = await firstValueFrom(
+      this.commentsClient
+        .send(
+          { cmd: 'get_comments_by_entity' },
+          { type: 'task', entityId: taskId, userId },
+        )
+        .pipe(mapRpcError('get comments by entity failed')),
+    );
+
+    return {
+      ...(taskData as any),
+      comments,
+    };
   }
 }
