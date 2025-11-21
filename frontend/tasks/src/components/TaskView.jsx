@@ -36,26 +36,50 @@ export default function TaskView({ task, submission, classInfo, me, comments }) 
 				</div>
 			</div>
 
-			<div className='space-y-6 mt-6 md:mt-16'>
-				{submission ? (
-					<div className='bg-green-50 p-4 rounded-xl border border-green-200'>
-						<div className='font-medium mb-1'>Ваша відповідь</div>
-						<a href={submission.content} target='_blank' className='text-blue-600 underline break-words'>
-							{submission.content}
-						</a>
-						<div className='text-sm text-gray-500 mt-2'>Надіслано: {fixOffsetIfNeeded(submission.submitted_at)}</div>
-						{submission.updated_at && (
-							<div className='text-sm text-gray-500'>Оновлено: {fixOffsetIfNeeded(submission.updated_at)}</div>
+			{!isTeacher && (
+				<div className='space-y-6 mt-6 md:mt-16 font-normal'>
+					<div className='bg-white shadow p-4 rounded-xl border border-gray-100 space-y-4'>
+						<h2 className='text-lg font-medium'>Ваша робота</h2>
+
+						{submission ? (
+							<div className='space-y-3'>
+								<div className='bg-green-50 p-4 rounded-xl'>
+									<div className='font-medium'>Посилання</div>
+									<a href={submission.content} target='_blank' className='text-blue-600 underline break-words'>
+										{submission.content}
+									</a>
+
+									<div className='text-sm text-gray-500 mt-2'>
+										Надіслано: {fixOffsetIfNeeded(submission.submitted_at)}
+									</div>
+
+									{submission.updated_at && (
+										<div className='text-sm text-gray-500'>Оновлено: {formatTime(submission.updated_at)}</div>
+									)}
+								</div>
+
+								<div className='bg-gray-50 p-3 rounded-xl'>
+									<div className='text-gray-600 text-sm'>Оцінка</div>
+									<div className='text-xl font-semibold'>{submission.grade ?? 'Без оцінки'}</div>
+								</div>
+
+								<SubmissionForm taskId={task.id} initial={submission} />
+							</div>
+						) : (
+							<div className='space-y-4'>
+								<div className='bg-yellow-50 p-3 rounded-xl'>Ви ще не здали роботу</div>
+
+								<div className='bg-gray-50 p-3 rounded-xl'>
+									<div className='text-gray-600 text-sm'>Оцінка</div>
+									<div className='text-xl font-semibold'>Без оцінки</div>
+								</div>
+
+								<SubmissionForm taskId={task.id} initial={null} />
+							</div>
 						)}
 					</div>
-				) : (
-					!isTeacher && (
-						<div className='bg-yellow-50 p-3 Ь rounded-xl border border-yellow-200'>Ви ще не здали роботу</div>
-					)
-				)}
-
-				{!isTeacher && <SubmissionForm taskId={task.id} initial={submission} />}
-			</div>
+				</div>
+			)}
 		</div>
 	)
 }

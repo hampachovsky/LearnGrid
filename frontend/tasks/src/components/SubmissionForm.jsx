@@ -43,6 +43,8 @@ export default function SubmissionForm({ taskId, initial }) {
 		initial ? updateMutation.mutate() : createMutation.mutate()
 	}
 
+	const isGraded = initial?.grade !== null && initial?.grade !== undefined
+
 	return (
 		<div className='bg-white shadow p-4 rounded-xl space-y-3'>
 			<textarea
@@ -57,17 +59,27 @@ export default function SubmissionForm({ taskId, initial }) {
 
 			{error && <div className='text-red-600 text-sm'>{error}</div>}
 
-			<div className='flex items-center justify-between'>
-				<button onClick={handleSubmit} className='bg-blue-600 text-white px-4 py-2 rounded-lg cursor-pointer'>
-					{initial ? 'Оновити роботу' : 'Здати роботу'}
+			<div className='flex flex-wrap gap-2'>
+				<button
+					onClick={handleSubmit}
+					disabled={isGraded}
+					className={`
+						text-sm font-normal h-9 px-3 rounded-lg whitespace-nowrap
+						inline-flex items-center justify-center max-w-full
+						${isGraded ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-blue-600 text-white cursor-pointer'}
+					`}
+				>
+					{initial ? 'Оновити' : 'Здати'}
 				</button>
 
 				{initial && (
 					<button
 						onClick={() => deleteMutation.mutate()}
-						className='text-red-600 hover:text-red-800 cursor-pointer flex items-center gap-1'
+						className='text-sm font-normal h-9 px-3 rounded-lg whitespace-nowrap
+						inline-flex items-center justify-center max-w-full
+						bg-red-50 text-red-600 hover:bg-red-100 cursor-pointer gap-1'
 					>
-						<TrashIcon className='w-5 h-5' />
+						<TrashIcon className='w-4 h-4' />
 						Скасувати
 					</button>
 				)}

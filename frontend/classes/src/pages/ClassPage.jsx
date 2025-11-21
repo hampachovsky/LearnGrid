@@ -9,6 +9,7 @@ import { fetchMe } from '../api/announcementsApi'
 import ClassHeader from '../components/ClassHeader'
 import ClassStream from '../components/ClassStream'
 import ClassTabs from '../components/ClassTabs'
+import GradesTab from '../components/GradesTab'
 import MembersTab from '../components/MembersTab'
 import TopicCreate from '../components/TopicCreate'
 import TopicFilter from '../components/TopicFilter'
@@ -100,7 +101,7 @@ export default function ClassPage() {
 
 			{activeTab === 'Учасники' && <MembersTab teacher={teacher} students={students} />}
 
-			{activeTab === 'Оцінки' && <p className='mt-6 text-gray-600'>Тут будуть оцінки…</p>}
+			{activeTab === 'Оцінки' && <GradesTab classId={id} isTeacher={me.role === 'teacher'} me={me} />}
 		</div>
 	)
 }
